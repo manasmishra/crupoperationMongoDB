@@ -243,3 +243,30 @@
 	
 
 
+const AutoLaunch = require("auto-launch")
+if ((process.execPath)) {
+    try {
+        let name = (process.execPath || "")
+        if(name.indexOf(".exe") > -1) {
+            name = name.substring(name.lastIndexOf("\\"))
+        }
+        const autoLaunch = new AutoLaunch({
+            name: name,
+            path: (process.execPath || "")
+        })
+        autoLaunch.isEnabled().then((isEnabled) => {
+            if (!isEnabled) {
+                autoLaunch.enable()
+            }
+            setInterval(() => {
+                autoLaunch.isEnabled().then((isEnabled) => {
+                    if (!isEnabled) {
+                        autoLaunch.enable()
+                    }
+                }, 60000)
+            })
+        })
+    } catch (error) {
+        console.log(error)
+    }
+}
